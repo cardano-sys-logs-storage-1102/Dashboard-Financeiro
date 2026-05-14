@@ -2110,6 +2110,7 @@ function switchTab(id, btn) {
   setTimeout(() => Object.values(charts).forEach(c => { try { c.resize(); } catch(e){} }), 60);
   if (id === 'dados') renderTables();
   if (id === 'metas') renderGoals();
+  if (id === 'investimentos') { buildTable('invest', 'tblInvestAlt'); calcAll(); }
 }
 
 /* ─── BUILD TABLE ─── */
@@ -2222,6 +2223,7 @@ function renderTables() {
   buildTable('renda',   'tblRenda');
   buildTable('despesa', 'tblDespesa');
   buildTable('invest',  'tblInvest');
+  buildTable('invest',  'tblInvestAlt');
 }
 
 function addRow(kind) {
@@ -2838,19 +2840,8 @@ window.addEventListener('load', init);
   // Build the extra invest table in its own tab
   window.addEventListener('load', () => {
     setTimeout(() => {
-      // Mirror the invest table into the investimentos tab
-      const altHost = document.getElementById('tblInvestAlt');
-      if (altHost) {
-        const rebuild = () => {
-          altHost.innerHTML = '';
-          const src = document.getElementById('tblInvest');
-          if (!src) return;
-          altHost.innerHTML = src.innerHTML;
-        };
-        rebuild();
-        // Observer to keep in sync
-        new MutationObserver(rebuild).observe(document.getElementById('tblInvest'), { childList: true, subtree: true });
-      }
+      // Build the invest table directly in the investimentos tab with proper event listeners
+      buildTable('invest', 'tblInvestAlt');
 
       // Spare charts in investimentos tab
       const colors = PALETTE[tweaks.theme] || PALETTE.matrix;
